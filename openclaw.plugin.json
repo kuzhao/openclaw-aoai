@@ -1,0 +1,13 @@
+{
+  "id": "azure-openai",
+  "name": "Azure OpenAI",
+  "description": "Azure OpenAI provider with API key and keyless authentication support",
+  "version": "2026.2.4",
+  "main": "index.ts",
+  "providers": ["azure-openai"],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  }
+}
