@@ -29,7 +29,7 @@ openclaw models auth login --provider azure-openai --method api-key
 You'll be prompted for:
 
 - Azure OpenAI endpoint URL (e.g., `https://your-resource-name.openai.azure.com`)
-- Deployment name (optional)
+- Model selection
 - API key
 
 ### Method 2: Keyless (DefaultAzureCredential)
@@ -43,7 +43,7 @@ openclaw models auth login --provider azure-openai --method keyless
 You'll be prompted for:
 
 - Azure OpenAI endpoint URL
-- Deployment name (optional)
+- Model selection
 
 The plugin will automatically use credentials from:
 
@@ -51,23 +51,7 @@ The plugin will automatically use credentials from:
 2. Azure CLI (`az login`)
 3. Managed identity (if running on Azure)
 
-## Configuration
-
-### Environment Variables
-
-#### For API Key Authentication:
-
-- `AZURE_OPENAI_API_KEY`: Your Azure OpenAI API key
-- `AZURE_OPENAI_ENDPOINT`: Your Azure OpenAI endpoint URL
-- `AZURE_OPENAI_DEPLOYMENT_NAME`: Default deployment name
-
-#### For Keyless Authentication:
-
-- `AZURE_CLIENT_ID`: Service principal client ID
-- `AZURE_CLIENT_SECRET`: Service principal client secret
-- `AZURE_TENANT_ID`: Azure AD tenant ID
-
-### Manual Configuration
+## Manually Configure the Plugin
 
 You can also manually configure the provider in your `config.json`:
 
@@ -104,7 +88,9 @@ You can also manually configure the provider in your `config.json`:
 }
 ```
 
-## Azure RBAC Permissions
+## Azure Side Configurations
+
+Make sure the models used by your openclaw agents have their actual model deployments in your Foundry resource. If not, the agent will return an empty response.
 
 For keyless authentication, ensure your Azure identity has the **Cognitive Services OpenAI User** role:
 
@@ -117,14 +103,13 @@ az role assignment create \
 
 ## Supported Models
 
-The plugin includes configurations for:
+This plugin supports all models that Azure OpenAI in Microsoft Foundry provides. They include the following popular:
 
-- GPT-4o and GPT-4o mini
-- GPT-4 and GPT-4 Turbo
-- GPT-3.5 Turbo
-- o1-preview and o1-mini (reasoning models)
+- GPT-5.1, GPT-5.2 and codex
+- GPT-4o and GPT-4.1
+- o3 and o3-mini
 
-You can customize model definitions in your configuration or add additional deployments.
+You can customize model definitions in your .openclaw configuration. 
 
 ## Reference
 
