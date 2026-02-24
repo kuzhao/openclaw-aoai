@@ -1,4 +1,4 @@
-# Azure OpenAI Provider Plugin
+# Azure OpenAI Model Provider for OpenClaw
 
 This plugin adds Azure OpenAI support to OpenClaw with two authentication methods:
 
