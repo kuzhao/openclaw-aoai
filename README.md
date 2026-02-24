@@ -14,9 +14,11 @@ This plugin adds Azure OpenAI support to OpenClaw with two authentication method
 
 ## Installation
 
-This plugin is bundled with OpenClaw. No separate installation required.
+Two ways:
+- openclaw plugins install openclaw-aoai.zip. Download the plugin zip from Releases
+- Build from source: follow [From Source](https://github.com/openclaw/openclaw?tab=readme-ov-file#from-source-development), download the zip, extract the plugin folder into extensions/ and then build from source
 
-## Authentication
+If building from source, you will need to enable the plugin first by: openclaw plugins enable azure-openai. Then, use either of the following methods to configure Azure OpenAI authentication:
 
 ### Method 1: API Key
 
@@ -50,43 +52,6 @@ The plugin will automatically use credentials from:
 1. Environment variables (`AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_TENANT_ID`)
 2. Azure CLI (`az login`)
 3. Managed identity (if running on Azure)
-
-## Manually Configure the Plugin
-
-You can also manually configure the provider in your `config.json`:
-
-```json
-{
-  "models": {
-    "providers": {
-      "azure-openai": {
-        "baseUrl": "https://your-resource-name.openai.azure.com/openai/deployments/gpt-4o",
-        "api": "openai-completions",
-        "apiKey": "AZURE_OPENAI_API_KEY",
-        "headers": {
-          "api-key": "${AZURE_OPENAI_API_KEY}"
-        },
-        "models": [
-          {
-            "id": "gpt-4o",
-            "name": "GPT-4o",
-            "reasoning": false,
-            "input": ["text", "image"],
-            "cost": {
-              "input": 2.5,
-              "output": 10,
-              "cacheRead": 1.25,
-              "cacheWrite": 2.5
-            },
-            "contextWindow": 128000,
-            "maxTokens": 16384
-          }
-        ]
-      }
-    }
-  }
-}
-```
 
 ## Azure Side Configurations
 
