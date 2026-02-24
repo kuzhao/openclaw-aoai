@@ -53,6 +53,8 @@ The plugin will automatically use credentials from:
 2. Azure CLI (`az login`)
 3. Managed identity (if running on Azure)
 
+**After the command succeeds, do please run "openclaw models set azure-openai/(ModelName)" to activate the model to use in your Azure OpenAI resource.**
+
 ## Azure Side Configurations
 
 Make sure the models used by your openclaw agents have their actual model deployments in your Foundry resource. If not, the agent will return an empty response.
