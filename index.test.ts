@@ -1,9 +1,8 @@
-import type { ProviderPlugin } from "openclaw/plugin-sdk";
 import { describe, it, expect, vi } from "vitest";
 
 describe("Azure OpenAI Plugin", () => {
   it("should export a valid plugin definition", async () => {
-    const plugin = (await import("./index.js")).default as ProviderPlugin;
+    const plugin = (await import("./index.js")).default;
 
     expect(plugin).toBeDefined();
     expect(plugin.id).toBe("azure-openai");
@@ -24,7 +23,6 @@ describe("Azure OpenAI Plugin", () => {
       registerProvider: vi.fn(),
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     plugin.register(mockApi as any);
 
     expect(mockApi.registerProvider).toHaveBeenCalledTimes(1);

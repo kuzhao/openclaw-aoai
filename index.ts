@@ -1,12 +1,16 @@
-import { DefaultAzureCredential } from "@azure/identity";
-import { emptyPluginConfigSchema } from "openclaw/plugin-sdk";
+import { 
+  DefaultAzureCredential,
+  type TokenCredential,
+} from "@azure/identity";
+import { 
+  emptyPluginConfigSchema,
+  type OpenClawPluginApi,
+  type ProviderAuthContext,
+} from "openclaw/plugin-sdk";
 
 const PROVIDER_ID = "azure-openai";
 const PROVIDER_LABEL = "Azure OpenAI";
 const ENV_VARS = [
-  "AZURE_OPENAI_API_KEY",
-  "AZURE_OPENAI_ENDPOINT",
-  "AZURE_OPENAI_DEPLOYMENT_NAME",
   "AZURE_CLIENT_ID",
   "AZURE_CLIENT_SECRET",
   "AZURE_TENANT_ID",
@@ -64,9 +68,10 @@ async function fetchAzureOpenAiModels(params: {
     .map((id) => {
       const lower = id.toLowerCase();
       const reasoning = /^o\d|reason/i.test(lower);
-      const input = lower.includes("vision") || lower.includes("gpt-4o")
-        ? (["text", "image"] as const)
-        : (["text"] as const);
+      const input =
+        lower.includes("vision") || lower.includes("gpt-4o")
+          ? (["text", "image"] as const)
+          : (["text"] as const);
       return {
         id,
         name: id,
@@ -104,7 +109,7 @@ const azureOpenAiPlugin = {
   name: "Azure OpenAI",
   description: "Azure OpenAI provider with API key and keyless authentication",
   configSchema: emptyPluginConfigSchema(),
-  register(api) {
+  register(api: OpenClawPluginApi) {
     api.registerProvider({
       id: PROVIDER_ID,
       label: PROVIDER_LABEL,
@@ -117,12 +122,14 @@ const azureOpenAiPlugin = {
           label: "API Key",
           hint: "Use Azure OpenAI API key from environment or paste manually",
           kind: "api_key",
-          run: async (ctx) => {
+          run: async (ctx: ProviderAuthContext) => {
             const endpoint = await ctx.prompter.text({
               message: "Azure OpenAI endpoint URL",
               placeholder: "https://your-resource-name.openai.azure.com",
-              validate: (value) => {
-                const val = String(value ?? "").trim().replace(/\/$/, "");
+              validate: (value: String) => {
+                const val = String(value ?? "")
+                  .trim()
+                  .replace(/\/$/, "");
                 if (!val) {
                   return "Endpoint URL is required";
                 }
@@ -135,20 +142,15 @@ const azureOpenAiPlugin = {
               },
             });
 
-            const deploymentName = await ctx.prompter.text({
-              message: "Deployment name (optional, can be configured per model)",
-              placeholder: "gpt-4o",
-            });
-
             const apiKey = await ctx.prompter.text({
               message: "Paste Azure OpenAI API key",
-              validate: (value) => {
+              validate: (value: String) => {
                 const val = String(value ?? "").trim();
                 return val ? undefined : "API key is required";
               },
             });
 
-            const endpointUrl = String(endpoint).trim();
+            const endpointUrl = String(endpoint).trim().replace(/\/$/, "");
             const apiKeyStr = String(apiKey).trim();
 
             const models = await fetchAzureOpenAiModels({
@@ -210,12 +212,14 @@ const azureOpenAiPlugin = {
           label: "Keyless (DefaultAzureCredential)",
           hint: "Use Azure managed identity or service principal",
           kind: "custom",
-          run: async (ctx) => {
+          run: async (ctx: ProviderAuthContext) => {
             const endpoint = await ctx.prompter.text({
               message: "Azure OpenAI endpoint URL",
               placeholder: "https://your-resource-name.openai.azure.com",
-              validate: (value) => {
-                const val = String(value ?? "").trim().replace(/\/$/, "");
+              validate: (value: String) => {
+                const val = String(value ?? "")
+                  .trim()
+                  .replace(/\/$/, "");
                 if (!val) {
                   return "Endpoint URL is required";
                 }
@@ -228,7 +232,7 @@ const azureOpenAiPlugin = {
               },
             });
 
-            const endpointUrl = String(endpoint).trim();
+            const endpointUrl = String(endpoint).trim().replace(/\/$/, "");
 
             const spin = ctx.prompter.progress("Acquiring Azure credentials…");
             try {
@@ -308,7 +312,7 @@ const azureOpenAiPlugin = {
           },
         },
       ],
-      refreshOAuth: async (cred) => {
+      refreshOAuth: async (cred: TokenCredential) => {
         // Only refresh if using keyless authentication
         if (cred.metadata?.useKeyless) {
           const endpoint = String(cred.metadata?.endpoint ?? "");
